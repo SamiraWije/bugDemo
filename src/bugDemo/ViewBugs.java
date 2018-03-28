@@ -8,6 +8,7 @@ public class ViewBugs {
 		try {
 			dao.readDataBase();
 			
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();

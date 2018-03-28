@@ -4,6 +4,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
@@ -12,18 +14,49 @@ public class MYSQLAccess {
 	private Connection connect = null;
 	private Statement statement = null;
 	private ResultSet resultSet = null;
+	private Session session = null;
+	
+	
+	private String sshHost = "192.168.10.23";
+	private String serverUser = "bugzilla";
+	private String serverPassword = "Auxenta123";
+	private int port = 22;
+	
+	private int rport = 3306;
+    private int lport = 3307;
 
-	// final private String host = "jdbc:mysql://192.168.10.23:3306/bugs";
-	final private String host = "jdbc:mysql://127.0.0.1:3306/bugs?useSSL=false";
+/*	final private String host = "jdbc:mysql://192.168.10.23:3306/bugs";
+	final private String host = "jdbc:mysql://127.0.0.1:3306/bugs?";
 	final private String user = "root";
-	final private String password = "Aux@123";
+	final private String password = "Aux@123";*/
 
-	// final private String host = "jdbc:mysql://127.0.0.1:3306/bugs?useSSL=false";
-	// final private String user = "bugs";
-	// final private String password = "Rambo123";
+//	 final private String host = "jdbc:mysql://192.168.10.23:3306/bugs?verifyServerCertificate=false&useSSL=true";
+	final private String host = "jdbc:mysql://192.168.10.23"+ lport +"/bugs";
+	 final private String user = "bugs";
+	 final private String password = "Rambo123";
 
 	public void readDataBase() throws Exception {
 		try {
+			
+			
+			JSch jsch = new JSch();
+			//get SSH session
+			
+			session = jsch.getSession(serverUser, sshHost,port);
+			session.setPassword(serverPassword);
+			java.util.Properties config = new java.util.Properties();
+            // Never automatically add new host keys to the host file
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
+            // Connect to remote server
+            session.connect();
+//            System.out.println("Connected");
+            // Apply the port forwarding
+            //String boundaddress ="0.0.0.0";
+            session.setPortForwardingL(lport, host, rport);
+			
+			
+			
 			// Load the mysql driver
 			Class.forName("com.mysql.jdbc.Driver");
 
